@@ -5,7 +5,6 @@ import smtplib
 from email.message import EmailMessage
 from io import BytesIO
 from openpyxl import Workbook
-from openpyxl.writer.excel import save_virtual_workbook
 from openpyxl.workbook.protection import WorkbookProtection
 # --- DATOS FIJOS ---
 COMPRADOR = "612539"
@@ -150,7 +149,11 @@ def crear_excel_protegido(df):
    for _, row in df.iterrows():
        ws.append(row.tolist())
    wb.security = WorkbookProtection(workbookPassword="NESTARES_24", lockStructure=True)
-   return save_virtual_workbook(wb)
+   # Usamos BytesIO para guardar el archivo en memoria
+   excel_stream = BytesIO()
+   wb.save(excel_stream)
+   excel_stream.seek(0)
+   return excel_stream
 def enviar_correo(destinatario, asunto, adjunto_bytes):
    msg = EmailMessage()
    msg["Subject"] = asunto
