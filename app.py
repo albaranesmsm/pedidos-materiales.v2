@@ -157,13 +157,13 @@ def crear_excel_protegido(df):
 def enviar_correo(destinatario, asunto, adjunto_bytes):
    msg = EmailMessage()
    msg["Subject"] = asunto
-   msg["From"] = "pedidosmaterialesmsm@gmail.com"
+   msg["From"] = "pedidosmaterialmsm@gmail.com"
    msg["To"] = destinatario
    msg.set_content("Adjunto encontrarás el archivo de pedido.")
    msg.add_attachment(adjunto_bytes, maintype='application', subtype='vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename="pedido_materiales.xlsx")
    with smtplib.SMTP("smtp.gmail.com", 587) as server:
        server.starttls()
-       server.login("pedidosmaterialesmsm@gmail.com", "iquiuslwxribewal")
+       server.login("pedidosmaterialmsm@gmail.com", "iquiuslwxribewal")
        server.send_message(msg)
 if st.button("Generar Pedido"):
    if pedido:
