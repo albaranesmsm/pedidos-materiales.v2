@@ -83,9 +83,9 @@ for articulo in articulos:
    maximo = restricciones.get(codigo, {}).get("max", 1000)
    multiplo = restricciones.get(codigo, {}).get("multiplo", 1)
    cantidad = st.number_input(
-       f"{descripcion} (Múltiplo: {multiplo}, Máx: {maximo})",
-       min_value=0, max_value=maximo, step=multiplo, value=0,
-   )
+   f"{descripcion} — Ref: {codigo} (Múltiplo: {multiplo}, Máx: {maximo})",
+   min_value=0, max_value=maximo, step=multiplo, value=0,
+)
    if cantidad > 0:
        pedido.append({
            "Fecha solicitud": datetime.date.today(),
