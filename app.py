@@ -128,12 +128,13 @@ if mostrar_instrucciones:
 <h4>¡Enhorabuena! Ya has generado tu pedido</h4>
 <p>Ahora tienes que enviar el fichero generado por mail siguiendo estas instrucciones:</p>
 <ol>
+<li>HAZ CLICK EN <b>Descargar Pedido</b></li>
 <li>Abre tu correo electrónico y crea un nuevo correo.</li>
 <li><b>Destinatario:</b> robot1@mahou-sanmiguel.com</li>
 <li><b>Asunto:</b> OAs pedidos materiales operaciones de venta</li>
 <li>Adjunta el fichero que acabas de descargar.</li>
 <li>Haz clic en <b>Enviar</b>.</li>
 </ol>
-<p>Una vez enviado, tendrás que esperar en torno a unos 30 minutos. Recibirás un correo automático con el resultado, es decir, con las OAs generadas.</p>
+<p>Una vez enviado, tendrás que esperar en torno a unos 30 minutos. Recibirás un correo automático con el resultado, es decir, con las OAs generadas. <b>IMPORTANTE, Asegura que el destinatario y el asunto es tal el que pone en las instrucciones si no no generará nada</b></p>
 </div>
    """, unsafe_allow_html=True)
