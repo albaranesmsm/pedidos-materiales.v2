@@ -131,7 +131,7 @@ if mostrar_instrucciones:
 <li>HAZ CLICK EN <b>Descargar Pedido</b></li>
 <li>Abre tu correo electrónico y crea un nuevo correo.</li>
 <li><b>Destinatario:</b> robot1@mahou-sanmiguel.com</li>
-<li><b>Asunto:</b> OAs pedidos materiales operaciones de venta</li>
+<li><b>Asunto:</b>OAs pedidos materiales operaciones de venta</li>
 <li>Adjunta el fichero que acabas de descargar.</li>
 <li>Haz clic en <b>Enviar</b>.</li>
 </ol>
