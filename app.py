@@ -63,19 +63,19 @@ restricciones = {
    "1601001": {"multiplo": 25, "max": 600}
 }
 # --- INTERFAZ ---
-st.title("Pedido de Materiales")
+st.title("Pedido de tuberías y químicos")
 # Acceder a las direcciones desde los secrets
 direcciones = st.secrets["direcciones"]
 # Solicitar al usuario el código de dirección de entrega
 dir_entrega = st.text_input("Código de Dirección de Entrega (4 cifras empezando por 8):", max_chars=4)
 # Validar el código de dirección de entrega
 if not dir_entrega or not (dir_entrega.isdigit() and len(dir_entrega) == 4 and dir_entrega.startswith("8")):
-   st.error("Debe introducir un código de 4 cifras que empiece por 8")
+   st.error("Debe introducir el código de almacén de envío")
    st.stop()
 elif dir_entrega in direcciones:
    st.success(f"Dirección seleccionada: {direcciones[dir_entrega]}")
 else:
-   st.warning("Código válido pero no reconocido. Se usará sin descripción asociada.")
+   st.warning("Almacén no reconocido, contacte con OOVV antes de hacer el pedido.")
 st.subheader("Selecciona las cantidades:")
 pedido = []
 errores = []
