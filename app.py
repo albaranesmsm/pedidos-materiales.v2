@@ -3,7 +3,6 @@ import pandas as pd
 import datetime
 from io import BytesIO
 from openpyxl import Workbook
-from openpyxl.workbook.protection import WorkbookProtection
 # --- DATOS FIJOS ---
 COMPRADOR = "612539"
 # --- ESTADO DE LA INTERFAZ ---
@@ -68,15 +67,15 @@ restricciones = {
    "1601306": {"multiplo": 25, "max": 300}, "0400153": {"multiplo": 10, "max": 300},
    "0400176": {"multiplo": 10, "max": 80}, "0400177": {"multiplo": 20, "max": 80},
    "0400232": {"multiplo": 600, "max": 1800}, "0400543": {"multiplo": 20, "max": 300},
-   "0400548": {"multiplo": 20, "max": 40}, "0400699": {"multiplo": 24, "max": 240},
+   "0400548": {"multiplo": 20, "max": 50}, "0400699": {"multiplo": 24, "max": 240},
    "1601001": {"multiplo": 25, "max": 600}
 }
 # --- INTERFAZ PRINCIPAL ---
 st.title("Pedido de tuberías y químicos")
-# Direcciones desde los secrets
+# Direcciones y bloqueos
 direcciones = st.secrets["direcciones"]
 bloqueados = st.secrets.get("bloqueados", {}).get("materiales", [])
-# Entrada de dirección de entrega
+# Dirección de entrega
 dir_entrega = st.text_input("Código de Dirección de Entrega (4 cifras empezando por 8):", max_chars=4)
 if not dir_entrega or not (dir_entrega.isdigit() and len(dir_entrega) == 4 and dir_entrega.startswith("8")):
    st.error("Debe introducir el código de almacén de envío")
@@ -87,19 +86,18 @@ else:
    st.warning("Almacén no reconocido, contacte con OOVV antes de hacer el pedido.")
 st.subheader("Selecciona las cantidades:")
 pedido = []
-errores = []
 for articulo in articulos:
-   codigo = str(articulo["Nº artículo"])
+   codigo = articulo["Nº artículo"]
    if codigo in bloqueados:
        continue
    descripcion = articulo["Descripción"]
    proveedor = proveedores.get(codigo)
    ob = ob_values.get(codigo)
    if not proveedor or not ob:
-       errores.append(f"Artículo {codigo} sin proveedor u OB.")
        continue
-   maximo = restricciones.get(codigo, {}).get("max", 1000)
-   multiplo = restricciones.get(codigo, {}).get("multiplo", 1)
+   restric = restricciones.get(codigo, {})
+   maximo = restric.get("max", 1000)
+   multiplo = restric.get("multiplo", 1)
    cantidad = st.number_input(
        f"{descripcion} — Ref: {codigo} (Múltiplo: {multiplo}, Máx: {maximo})",
        min_value=0, max_value=maximo, step=multiplo, value=0,
@@ -118,26 +116,28 @@ for articulo in articulos:
            "Descripción": descripcion,
            "Autorizar cant": cantidad,
        })
-# Crear Excel protegido
+# Crear Excel protegido por hoja
 def crear_excel_protegido(df):
    wb = Workbook()
    ws = wb.active
+   ws.title = "Pedido"
    ws.append(df.columns.tolist())
    for _, row in df.iterrows():
        ws.append(row.tolist())
-   wb.security = WorkbookProtection(workbookPassword="NESTARES_24", lockStructure=True)
+   ws.protection.sheet = True
+   ws.protection.set_password("NESTARES_24")
    excel_stream = BytesIO()
    wb.save(excel_stream)
    excel_stream.seek(0)
    return excel_stream
-# Botón para generar pedido
+# Generar pedido
 if st.button("Generar Pedido"):
    if pedido:
        df = pd.DataFrame(pedido)
        excel_bytes = crear_excel_protegido(df)
-       st.success("¡Pedido generado correctamente!")
        nombre_archivo = f"TubQuim_{dir_entrega}_{datetime.date.today()}.xlsx"
        st.download_button("Descargar Pedido", data=excel_bytes, file_name=nombre_archivo)
+       st.success("¡Pedido generado correctamente!")
        st.session_state.mostrar_instrucciones = True
    else:
        st.warning("No se ha seleccionado ningún artículo.")
@@ -149,7 +149,6 @@ if st.session_state.mostrar_instrucciones:
 <p>Ahora tienes que enviar el fichero generado por mail siguiendo estas instrucciones:</p>
 <ol>
 <li>HAZ CLICK EN <b>Descargar Pedido</b></li>
-<li>Haz clic en el siguiente enlace para abrir tu correo con los campos rellenados:</li>
 <li>
 <a href='mailto:robot1@mahou-sanmiguel.com?subject=OAs%20pedidos%20materiales%20operaciones%20de%20venta&body=Adjunta%20aquí%20tu%20pedido' target='_blank'>
    📧 Enviar correo automáticamente
