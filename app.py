@@ -9,6 +9,12 @@ COMPRADOR = "612539"
 # --- ESTADO DE LA INTERFAZ ---
 if "mostrar_instrucciones" not in st.session_state:
    st.session_state.mostrar_instrucciones = False
+# --- DISCLAIMER DESDE SECRETS ---
+disclaimer_text = st.secrets.get("disclaimer", {}).get("mensaje", "")
+if disclaimer_text:
+   st.markdown("### ℹ️ Información importante")
+   st.info(disclaimer_text)
+   st.divider()
 # --- RELACIÓN ARTÍCULOS Y PROVEEDORES ---
 proveedores = {
    "1600043": "13161", "1600050": "13161", "1600051": "13161", "1600052": "13161",
@@ -65,7 +71,7 @@ restricciones = {
    "0400548": {"multiplo": 20, "max": 50}, "0400699": {"multiplo": 24, "max": 240},
    "1601001": {"multiplo": 25, "max": 600}
 }
-# --- INTERFAZ ---
+# --- INTERFAZ PRINCIPAL ---
 st.title("Pedido de tuberías y químicos")
 # Direcciones desde los secrets
 direcciones = st.secrets["direcciones"]
