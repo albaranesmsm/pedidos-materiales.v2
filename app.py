@@ -6,6 +6,9 @@ from openpyxl import Workbook
 from openpyxl.workbook.protection import WorkbookProtection
 # --- DATOS FIJOS ---
 COMPRADOR = "612539"
+# --- ESTADO DE LA INTERFAZ ---
+if "mostrar_instrucciones" not in st.session_state:
+   st.session_state.mostrar_instrucciones = False
 # --- RELACIÓN ARTÍCULOS Y PROVEEDORES ---
 proveedores = {
    "1600043": "13161", "1600050": "13161", "1600051": "13161", "1600052": "13161",
@@ -122,7 +125,6 @@ def crear_excel_protegido(df):
    excel_stream.seek(0)
    return excel_stream
 # Botón para generar pedido
-mostrar_instrucciones = False
 if st.button("Generar Pedido"):
    if pedido:
        df = pd.DataFrame(pedido)
@@ -130,11 +132,11 @@ if st.button("Generar Pedido"):
        st.success("¡Pedido generado correctamente!")
        nombre_archivo = f"TubQuim_{dir_entrega}_{datetime.date.today()}.xlsx"
        st.download_button("Descargar Pedido", data=excel_bytes, file_name=nombre_archivo)
-       mostrar_instrucciones = True
+       st.session_state.mostrar_instrucciones = True
    else:
        st.warning("No se ha seleccionado ningún artículo.")
-# Instrucciones con enlace mailto
-if mostrar_instrucciones:
+# Instrucciones finales
+if st.session_state.mostrar_instrucciones:
    st.markdown(f"""
 <div style='border: 2px solid #4CAF50; padding: 20px; border-radius: 10px; background-color: #f6fff6'>
 <h4>¡Enhorabuena! Ya has generado tu pedido</h4>
