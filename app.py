@@ -3,6 +3,7 @@ import pandas as pd
 import datetime
 from io import BytesIO
 from openpyxl import Workbook
+from openpyxl.worksheet.protection import SheetProtection
 # --- DATOS FIJOS ---
 COMPRADOR = "612539"
 # --- ESTADO DE LA INTERFAZ ---
@@ -67,15 +68,13 @@ restricciones = {
    "1601306": {"multiplo": 25, "max": 300}, "0400153": {"multiplo": 10, "max": 300},
    "0400176": {"multiplo": 10, "max": 80}, "0400177": {"multiplo": 20, "max": 80},
    "0400232": {"multiplo": 600, "max": 1800}, "0400543": {"multiplo": 20, "max": 300},
-   "0400548": {"multiplo": 20, "max": 40}, "0400699": {"multiplo": 24, "max": 240},
+   "0400548": {"multiplo": 20, "max": 50}, "0400699": {"multiplo": 24, "max": 240},
    "1601001": {"multiplo": 25, "max": 600}
 }
-# --- INTERFAZ PRINCIPAL ---
+# --- INTERFAZ DE USUARIO ---
 st.title("Pedido de tuberías y químicos")
-# Direcciones y bloqueos
 direcciones = st.secrets["direcciones"]
 bloqueados = st.secrets.get("bloqueados", {}).get("materiales", [])
-# Dirección de entrega
 dir_entrega = st.text_input("Código de Dirección de Entrega (4 cifras empezando por 8):", max_chars=4)
 if not dir_entrega or not (dir_entrega.isdigit() and len(dir_entrega) == 4 and dir_entrega.startswith("8")):
    st.error("Debe introducir el código de almacén de envío")
@@ -86,6 +85,7 @@ else:
    st.warning("Almacén no reconocido, contacte con OOVV antes de hacer el pedido.")
 st.subheader("Selecciona las cantidades:")
 pedido = []
+errores_multiplo = []
 for articulo in articulos:
    codigo = articulo["Nº artículo"]
    if codigo in bloqueados:
@@ -103,6 +103,8 @@ for articulo in articulos:
        min_value=0, max_value=maximo, step=multiplo, value=0,
    )
    if cantidad > 0:
+       if cantidad % multiplo != 0:
+           errores_multiplo.append(f"{codigo} ({descripcion}) — debe ser múltiplo de {multiplo}")
        pedido.append({
            "Fecha solicitud": datetime.date.today(),
            "OB": ob,
@@ -116,7 +118,7 @@ for articulo in articulos:
            "Descripción": descripcion,
            "Autorizar cant": cantidad,
        })
-# Crear Excel protegido por hoja
+# --- CREAR EXCEL ---
 def crear_excel_protegido(df):
    wb = Workbook()
    ws = wb.active
@@ -130,32 +132,30 @@ def crear_excel_protegido(df):
    wb.save(excel_stream)
    excel_stream.seek(0)
    return excel_stream
-# Generar pedido
+# --- GENERAR PEDIDO ---
 if st.button("Generar Pedido"):
-   if pedido:
+   if not pedido:
+       st.warning("No se ha seleccionado ningún artículo.")
+   elif errores_multiplo:
+       st.error("⚠️ Las siguientes líneas no cumplen el múltiplo requerido:\n\n" + "\n".join(errores_multiplo))
+   else:
        df = pd.DataFrame(pedido)
        excel_bytes = crear_excel_protegido(df)
        nombre_archivo = f"TubQuim_{dir_entrega}_{datetime.date.today()}.xlsx"
        st.download_button("Descargar Pedido", data=excel_bytes, file_name=nombre_archivo)
        st.success("¡Pedido generado correctamente!")
        st.session_state.mostrar_instrucciones = True
-   else:
-       st.warning("No se ha seleccionado ningún artículo.")
-# Instrucciones finales
+# --- INSTRUCCIONES ---
 if st.session_state.mostrar_instrucciones:
    st.markdown(f"""
 <div style='border: 2px solid #4CAF50; padding: 20px; border-radius: 10px; background-color: #f6fff6'>
 <h4>¡Enhorabuena! Ya has generado tu pedido</h4>
 <p>Ahora tienes que enviar el fichero generado por mail siguiendo estas instrucciones:</p>
 <ol>
-<li>HAZ CLICK EN <b>Descargar Pedido</b></li>
-<li>
-<a href='mailto:robot1@mahou-sanmiguel.com?subject=OAs%20pedidos%20materiales%20operaciones%20de%20venta&body=Adjunta%20aquí%20tu%20pedido' target='_blank'>
-   📧 Enviar correo automáticamente
-</a>
-</li>
-<li>Adjunta el fichero que acabas de descargar antes de enviarlo.</li>
+<li>Haz clic en <b>Descargar Pedido</b></li>
+<li><a href='mailto:robot1@mahou-sanmiguel.com?subject=OAs%20pedidos%20materiales%20operaciones%20de%20venta&body=Adjunta%20aquí%20tu%20pedido' target='_blank'>📧 Enviar correo automáticamente</a></li>
+<li>Adjunta el fichero descargado y pulsa <b>Enviar</b>.</li>
 </ol>
-<p>Una vez enviado, recibirás un correo automático con el resultado. <b>IMPORTANTE:</b> Asegúrate de que el destinatario y el asunto son exactamente como se indica o no se generará nada.</p>
+<p><b>IMPORTANTE:</b> Usa exactamente el destinatario y el asunto indicados para que se generen correctamente las OAs.</p>
 </div>
 """, unsafe_allow_html=True)
