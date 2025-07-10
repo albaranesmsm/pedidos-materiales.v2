@@ -151,8 +151,8 @@ if st.button("Generar Pedido"):
        )
        if suma_quimicos < 300:
            st.error(
-               f"⚠️ La suma total de unidades para los artículos químicos seleccionados debe ser **igual o mayor a 300**.\n\n"
-               f"Actualmente se han pedido **{suma_quimicos} unidades** en total. Por favor, revisa y ajusta las cantidades."
+               f"⚠️ La suma total de Kilogramos para los químicos seleccionados debe ser **igual o mayor a 300kg**.\n\n"
+               f"Actualmente se han pedido **{suma_quimicos} Kilogramos** en total. Por favor, revisa y ajusta las cantidades."
            )
        else:
            df = pd.DataFrame(pedido)
