@@ -59,7 +59,7 @@ articulos = [
 ]
 # --- RESTRICCIONES POR ARTÍCULO ---
 restricciones = {
-   "1600043": {"multiplo": 25, "max": 1500}, "1600050": {"multiplo": 25, "max": 2000},
+   "1600043": {"multiplo": 50, "max": 1500}, "1600050": {"multiplo": 25, "max": 2000},
    "1600051": {"multiplo": 25, "max": 500}, "1600052": {"multiplo": 25, "max": 500},
    "1600053": {"multiplo": 25, "max": 500}, "1600054": {"multiplo": 25, "max": 500},
    "1600055": {"multiplo": 25, "max": 1500}, "1600911": {"multiplo": 25, "max": 1000},
