@@ -68,7 +68,7 @@ restricciones = {
    "1601306": {"multiplo": 25, "max": 300}, "0400153": {"multiplo": 10, "max": 300},
    "0400176": {"multiplo": 10, "max": 80}, "0400177": {"multiplo": 20, "max": 80},
    "0400232": {"multiplo": 600, "max": 1800}, "0400543": {"multiplo": 20, "max": 300},
-   "0400548": {"multiplo": 20, "max": 50}, "0400699": {"multiplo": 25, "max": 250},
+   "0400548": {"multiplo": 20, "max": 100}, "0400699": {"multiplo": 25, "max": 250},
    "1601001": {"multiplo": 25, "max": 600}
 }
 # --- CÓDIGOS DE QUÍMICOS QUE DEBEN SUMAR AL MENOS 300 ---
