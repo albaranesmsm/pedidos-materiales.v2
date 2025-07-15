@@ -68,13 +68,8 @@ restricciones = {
    "1601306": {"multiplo": 25, "max": 300}, "0400153": {"multiplo": 10, "max": 300},
    "0400176": {"multiplo": 10, "max": 80}, "0400177": {"multiplo": 20, "max": 80},
    "0400232": {"multiplo": 600, "max": 1800}, "0400543": {"multiplo": 20, "max": 300},
-   "0400548": {"multiplo": 20, "max": 100}, "0400699": {"multiplo": 25, "max": 250},
+   "0400548": {"multiplo": 20, "max": 50}, "0400699": {"multiplo": 25, "max": 250},
    "1601001": {"multiplo": 25, "max": 600}
-}
-# --- CÓDIGOS DE QUÍMICOS QUE DEBEN SUMAR AL MENOS 300 ---
-quimicos_especiales = {
-   "0400153", "0400176", "0400177", "0400232",
-   "0400543", "0400548", "0400699", "1601001"
 }
 # --- INTERFAZ DE USUARIO ---
 st.title("Pedido de tuberías y químicos")
@@ -144,23 +139,12 @@ if st.button("Generar Pedido"):
    elif errores_multiplo:
        st.error("⚠️ Las siguientes líneas no cumplen el múltiplo requerido:\n\n" + "\n".join(errores_multiplo))
    else:
-       suma_quimicos = sum(
-           item["Autorizar cant"]
-           for item in pedido
-           if item["Nº artículo"] in quimicos_especiales
-       )
-       if suma_quimicos < 300:
-           st.error(
-               f"⚠️ La suma total de Kilogramos para los químicos seleccionados debe ser **igual o mayor a 300kg**.\n\n"
-               f"Actualmente se han pedido **{suma_quimicos} Kilogramos** en total. Por favor, revisa y ajusta las cantidades."
-           )
-       else:
-           df = pd.DataFrame(pedido)
-           excel_bytes = crear_excel_protegido(df)
-           nombre_archivo = f"TubQuim_{dir_entrega}_{datetime.date.today()}.xlsx"
-           st.download_button("Descargar Pedido", data=excel_bytes, file_name=nombre_archivo)
-           st.success("¡Pedido generado correctamente!")
-           st.session_state.mostrar_instrucciones = True
+       df = pd.DataFrame(pedido)
+       excel_bytes = crear_excel_protegido(df)
+       nombre_archivo = f"TubQuim_{dir_entrega}_{datetime.date.today()}.xlsx"
+       st.download_button("Descargar Pedido", data=excel_bytes, file_name=nombre_archivo)
+       st.success("¡Pedido generado correctamente!")
+       st.session_state.mostrar_instrucciones = True
 # --- INSTRUCCIONES ---
 if st.session_state.mostrar_instrucciones:
    st.markdown(f"""
